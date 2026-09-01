@@ -1085,7 +1085,8 @@
         placeholder: "Ví dụ: Keo dán nội thất 3X BOND siêu dính cho thợ thi công...",
         btnText: "🚀 Đăng lên Fanpage Tâm An",
         icon: "📷",
-        bannerInfo: "📍 Gần TH Lê Văn Tám, Quảng Trung, Kiến Đức, Lâm Đồng | 🌐 zbuild.click",
+        bannerLine1: "📍 Gần TH Lê Văn Tám, Quảng Trung, Kiến Đức, Lâm Đồng",
+        bannerLine2: "🌐 Website: www.zbuild.click",
         webhook: `${SERVER_URL}/webhook/dang-bai-fb`,
         themeClass: ""
       },
@@ -1097,7 +1098,8 @@
         placeholder: "Ví dụ: Phần mềm tự động hóa quản lý kho & bán hàng đa kênh Dunvex CRM...",
         btnText: "🚀 Đăng lên Fanpage Dunvex",
         icon: "⚡",
-        bannerInfo: "🚀 Giải Pháp Phần Mềm & Tự Động Hóa Doanh Nghiệp | 💬 Nhắn tin Fanpage",
+        bannerLine1: "🚀 Giải Pháp Phần Mềm & Tự Động Hóa Doanh Nghiệp",
+        bannerLine2: "💬 Liên hệ tư vấn trực tiếp qua Fanpage",
         webhook: `${SERVER_URL}/webhook/dang-bai-dunvex`,
         themeClass: "theme-dunvex"
       }
@@ -1182,7 +1184,7 @@
     });
 
     // ==========================================================
-    // BỘ NÉN & GHÉP KHUNG LOGO VIDEO CHUẨN HD SẮC NÉT (CANVAS RENDER)
+    // BỘ NÉN & GHÉP KHUNG LOGO VIDEO CHUẨN HD SẮC NÉT (CANVAS RENDER 3 DÒNG)
     // ==========================================================
     async function processAndFrameVideo(file, brand, onProgress) {
       return new Promise((resolve, reject) => {
@@ -1255,21 +1257,21 @@
           recorder.start(1000);
           video.play();
 
-          // Hàm vẽ dải banner thương hiệu sắc nét ôm sát chân video
+          // Hàm vẽ dải banner thương hiệu 3 dòng sắc nét ôm sát chân video
           function renderFrameWithBanner() {
             if (!video.paused && !video.ended) {
               // 1. Vẽ khung hình video
               ctx.drawImage(video, 0, 0, targetWidth, targetHeight);
 
-              // 2. Kích thước banner dưới đáy (12% chiều cao video)
-              const bannerH = Math.max(70, Math.round(targetHeight * 0.12));
+              // 2. Kích thước banner dưới đáy (14% chiều cao video)
+              const bannerH = Math.max(88, Math.round(targetHeight * 0.14));
               const bannerY = targetHeight - bannerH;
 
               // Nền Gradient thương hiệu
               const grad = ctx.createLinearGradient(0, bannerY, 0, targetHeight);
               if (brand.badge === 'TA') {
                 grad.addColorStop(0, 'rgba(0, 24, 48, 0.94)');
-                grad.addColorStop(1, 'rgba(0, 34, 68, 0.96)');
+                grad.addColorStop(1, 'rgba(0, 34, 68, 0.97)');
               } else {
                 grad.addColorStop(0, 'rgba(11, 15, 25, 0.95)');
                 grad.addColorStop(1, 'rgba(15, 23, 42, 0.98)');
@@ -1313,19 +1315,24 @@
               ctx.textBaseline = 'middle';
               ctx.fillText(brand.badge, badgeX + (badgeSize / 2), badgeY + (badgeSize / 2));
 
-              // 4. Vẽ Tên thương hiệu & Thông tin
+              // 4. Vẽ Tên thương hiệu & Thông tin 3 Dòng Rõ Ràng
               const textX = badgeX + badgeSize + Math.round(targetWidth * 0.025);
               ctx.textAlign = 'left';
 
-              // Tên thương hiệu
+              // Dòng 1: Tên thương hiệu
               ctx.fillStyle = (brand.badge === 'TA') ? '#FFD700' : '#FFFFFF';
-              ctx.font = `bold ${Math.round(bannerH * 0.32)}px sans-serif`;
-              ctx.fillText(brand.title, textX, bannerY + Math.round(bannerH * 0.38));
+              ctx.font = `bold ${Math.round(bannerH * 0.28)}px sans-serif`;
+              ctx.fillText(brand.title, textX, bannerY + Math.round(bannerH * 0.30));
 
-              // Địa chỉ / Hotline / Website
+              // Dòng 2: Địa chỉ
               ctx.fillStyle = '#E2E8F0';
-              ctx.font = `500 ${Math.round(bannerH * 0.22)}px sans-serif`;
-              ctx.fillText(brand.bannerInfo, textX, bannerY + Math.round(bannerH * 0.74));
+              ctx.font = `500 ${Math.round(bannerH * 0.19)}px sans-serif`;
+              ctx.fillText(brand.bannerLine1, textX, bannerY + Math.round(bannerH * 0.58));
+
+              // Dòng 3: Website (Xuống dòng riêng biệt)
+              ctx.fillStyle = (brand.badge === 'TA') ? '#38BDF8' : '#00F0FF';
+              ctx.font = `600 ${Math.round(bannerH * 0.19)}px sans-serif`;
+              ctx.fillText(brand.bannerLine2, textX, bannerY + Math.round(bannerH * 0.84));
 
               if (video.duration) {
                 const percent = Math.round((video.currentTime / video.duration) * 100);
@@ -1371,7 +1378,6 @@
 
       const originalSizeMB = (file.size / (1024 * 1024)).toFixed(1);
 
-      // Nếu là video -> Ghép khung thương hiệu & nén HD tự động
       if (file.type.startsWith('video/')) {
         statusBox.innerHTML = `<span class="spinner"></span> 🎬 Đang tự động ghép khung logo <b>${b.badge}</b> & nén video chuẩn HD (${originalSizeMB} MB): <b id="compressPercent">0%</b>...`;
         
