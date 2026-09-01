@@ -1182,7 +1182,7 @@
       }
     });
 
-    form.addEventListener('submit', async function(e) {
+    form.addEventListener('submit', function(e) {
       e.preventDefault();
       
       const file = fileInput.files[0];
@@ -1198,37 +1198,60 @@
         return;
       }
 
+      const fileSizeMB = (file.size / (1024 * 1024)).toFixed(1);
+      if (file.size > 100 * 1024 * 1024) {
+        alert(`⚠️ File video của bạn dung lượng ${fileSizeMB}MB (vượt quá giới hạn 100MB của Cloudflare). Vui lòng nén video hoặc chọn video dưới 100MB để đảm bảo tải lên thành công!`);
+        return;
+      }
+
       submitBtn.disabled = true;
       statusBox.className = "status-box status-loading";
-      statusBox.innerHTML = `<span class="spinner"></span> Đang gửi sang hệ thống... DeepSeek AI đang tạo bài và ghép khung cho <b>${b.name}</b>.`;
+      statusBox.innerHTML = `<span class="spinner"></span> Đang tải lên server (${fileSizeMB} MB): <b id="uploadPercent">0%</b>...`;
 
       const formData = new FormData();
       formData.append('image', file);
       formData.append('caption', caption);
 
-      try {
-        const response = await fetch(b.webhook, {
-          method: 'POST',
-          body: formData
-        });
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', b.webhook, true);
 
-        if (response.ok) {
+      xhr.upload.onprogress = function(event) {
+        if (event.lengthComputable) {
+          const percent = Math.round((event.loaded / event.total) * 100);
+          const percentEl = document.getElementById('uploadPercent');
+          if (percentEl) percentEl.innerText = percent + "%";
+          if (percent >= 100) {
+            statusBox.innerHTML = `<span class="spinner"></span> Đã tải lên 100%! Đang xử lý AI và render video trên máy bàn...`;
+          }
+        }
+      };
+
+      xhr.onload = function() {
+        submitBtn.disabled = false;
+        if (xhr.status >= 200 && xhr.status < 300) {
           statusBox.className = "status-box status-success";
-          statusBox.innerHTML = `🎉 <b>Đã đăng thành công lên Fanpage ${b.name}!</b><br>Bài viết và hình ảnh/video đã được xuất bản.<br><small>Bạn có thể tiếp tục chọn ảnh khác để đăng bài tiếp theo bên dưới.</small>`;
+          statusBox.innerHTML = `🎉 <b>Đã đăng thành công lên Fanpage ${b.name}!</b><br>Video và bài viết đã xuất bản.<br><small>Form đã sẵn sàng để đăng bài tiếp theo.</small>`;
           form.reset();
           previewContainer.style.display = 'none';
         } else {
           statusBox.className = "status-box status-error";
-          statusBox.innerHTML = `⚠️ Gửi dữ liệu thất bại (Mã lỗi: ${response.status}). Vui lòng kiểm tra n8n đã bật workflow tương ứng chưa.`;
+          statusBox.innerHTML = `⚠️ Máy chủ báo lỗi (Mã ${xhr.status}): ${xhr.responseText || 'Không thể xử lý file'}.`;
         }
-      } catch (err) {
-        statusBox.className = "status-box status-success";
-        statusBox.innerHTML = `🎉 <b>Đã gửi thành công lên n8n!</b><br>AI đang hoàn tất đăng lên Fanpage <b>${b.name}</b>.<br><small>Form đã sẵn sàng để bạn đăng bài tiếp theo!</small>`;
-        form.reset();
-        previewContainer.style.display = 'none';
-      } finally {
+      };
+
+      xhr.onerror = function() {
         submitBtn.disabled = false;
-      }
+        statusBox.className = "status-box status-error";
+        statusBox.innerHTML = `❌ <b>Lỗi kết nối mạng:</b> Không thể gửi file (${fileSizeMB} MB) tới máy chủ. Vui lòng kiểm tra kết nối Cloudflare hoặc giảm dung lượng video.`;
+      };
+
+      xhr.ontimeout = function() {
+        submitBtn.disabled = false;
+        statusBox.className = "status-box status-error";
+        statusBox.innerHTML = `⏱️ Quá thời gian tải lên (Timeout). Vui lòng thử lại với video dung lượng nhẹ hơn.`;
+      };
+
+      xhr.send(formData);
     });
   </script>
 </body>
