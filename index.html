@@ -58,6 +58,156 @@
       max-width: 560px;
     }
 
+    /* Màn hình Đăng nhập (Auth Screen) */
+    .auth-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(11, 15, 25, 0.94);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 20px;
+    }
+
+    .auth-card {
+      background: #131B2E;
+      width: 100%;
+      max-width: 420px;
+      border-radius: 24px;
+      padding: 32px 26px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(0, 240, 255, 0.2);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      text-align: center;
+      color: #F8FAFC;
+    }
+
+    .auth-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #0F172A, #1E1B4B);
+      border: 2.5px solid #00F0FF;
+      border-radius: 16px;
+      font-size: 26px;
+      margin-bottom: 14px;
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.35);
+    }
+
+    .auth-card h2 {
+      font-size: 22px;
+      font-weight: 800;
+      color: #FFFFFF;
+      margin-bottom: 6px;
+    }
+
+    .auth-card p {
+      font-size: 13.5px;
+      color: #94A3B8;
+      margin-bottom: 24px;
+    }
+
+    .auth-input-group {
+      margin-bottom: 16px;
+      text-align: left;
+    }
+
+    .auth-input-group label {
+      display: block;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #CBD5E1;
+      margin-bottom: 6px;
+    }
+
+    .auth-input {
+      width: 100%;
+      padding: 14px 16px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1.5px solid rgba(0, 240, 255, 0.3);
+      border-radius: 12px;
+      font-size: 16px;
+      color: #FFFFFF;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .auth-input:focus {
+      border-color: #00F0FF;
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.3);
+    }
+
+    .auth-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #0284C7, #0EA5E9);
+      color: #FFFFFF;
+      border: none;
+      padding: 15px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 10px;
+      box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4);
+      transition: all 0.2s;
+    }
+
+    .auth-btn:hover {
+      background: linear-gradient(135deg, #0369A1, #0284C7);
+      transform: translateY(-1px);
+    }
+
+    .auth-error {
+      display: none;
+      color: #F87171;
+      font-size: 13px;
+      margin-top: 10px;
+      font-weight: 500;
+    }
+
+    /* Thanh Header Top (User info & Logout) */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding: 0 4px;
+    }
+
+    .user-tag {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-logout {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 5px 12px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-logout:hover {
+      background: rgba(239, 68, 68, 0.1);
+      color: #EF4444;
+      border-color: #EF4444;
+    }
+
     .brand-switcher {
       display: flex;
       background: rgba(0, 0, 0, 0.08);
@@ -300,7 +450,47 @@
 </head>
 <body>
 
-  <div class="container">
+  <!-- Màn hình Khóa Bảo Mật (Authentication Modal) -->
+  <div id="authOverlay" class="auth-overlay">
+    <div class="auth-card">
+      <div class="auth-badge">🔒</div>
+      <h2>Xác Thực Bảo Mật</h2>
+      <p>Vui lòng đăng nhập để sử dụng hệ thống đăng bài</p>
+
+      <form id="authForm">
+        <div class="auth-input-group">
+          <label>Tài khoản</label>
+          <input type="text" id="usernameInput" class="auth-input" placeholder="Nhập tên đăng nhập..." required autocomplete="username">
+        </div>
+
+        <div class="auth-input-group">
+          <label>Mật khẩu</label>
+          <input type="password" id="passwordInput" class="auth-input" placeholder="Nhập mật khẩu..." required autocomplete="current-password">
+        </div>
+
+        <div style="text-align: left; margin: 12px 0; font-size: 13.5px; color: #94A3B8; display: flex; align-items: center; gap: 8px;">
+          <input type="checkbox" id="rememberMe" checked style="width: 16px; height: 16px; cursor: pointer;">
+          <label for="rememberMe" style="margin-bottom: 0; cursor: pointer; color: #CBD5E1;">Ghi nhớ đăng nhập trên thiết bị này</label>
+        </div>
+
+        <button type="submit" class="auth-btn">
+          <span>🚀 Đăng Nhập Hệ Thống</span>
+        </button>
+
+        <div id="authError" class="auth-error">⚠️ Tên tài khoản hoặc mật khẩu không chính xác!</div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Giao diện Chính -->
+  <div class="container" id="mainApp" style="display: none;">
+    <div class="top-bar">
+      <div class="user-tag">
+        <span>🟢 Đã đăng nhập:</span> <b id="displayUsername" style="color: var(--text);">Admin</b>
+      </div>
+      <button type="button" class="btn-logout" onclick="logout()">🔒 Đăng xuất</button>
+    </div>
+
     <div class="brand-switcher">
       <button type="button" id="tabTamAn" class="tab-btn active" onclick="switchBrand('taman')">
         <span>🏢 Thạch Cao Tâm An</span>
@@ -348,7 +538,71 @@
   </div>
 
   <script>
-    // Đường dẫn Cloudflare HTTPS chính thức của n8n
+    // ==========================================
+    // CẤU HÌNH TÀI KHOẢN BẢO MẬT
+    // ==========================================
+    const AUTH_CONFIG = {
+      defaultUser: "admin",
+      defaultPass: "ta123", // Mật khẩu bảo mật
+      sessionKey: "app_auth_session_v1"
+    };
+
+    // Kiểm tra phiên đăng nhập khi mở trang
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedAuth = localStorage.getItem(AUTH_CONFIG.sessionKey) || sessionStorage.getItem(AUTH_CONFIG.sessionKey);
+      if (savedAuth === "authenticated") {
+        showApp();
+      } else {
+        showAuth();
+      }
+    });
+
+    document.getElementById('authForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const user = document.getElementById('usernameInput').value.trim();
+      const pass = document.getElementById('passwordInput').value;
+      const remember = document.getElementById('rememberMe').checked;
+      const errorBox = document.getElementById('authError');
+
+      // Cho phép đăng nhập bằng tài khoản admin / ta123 hoặc bất kỳ tên nào với mật khẩu ta123
+      if (pass === AUTH_CONFIG.defaultPass || (user.toLowerCase() === AUTH_CONFIG.defaultUser && pass === AUTH_CONFIG.defaultPass)) {
+        errorBox.style.display = 'none';
+        if (remember) {
+          localStorage.setItem(AUTH_CONFIG.sessionKey, "authenticated");
+          localStorage.setItem("app_user_name", user || "Admin");
+        } else {
+          sessionStorage.setItem(AUTH_CONFIG.sessionKey, "authenticated");
+          sessionStorage.setItem("app_user_name", user || "Admin");
+        }
+        showApp(user || "Admin");
+      } else {
+        errorBox.style.display = 'block';
+      }
+    });
+
+    function showApp(userName) {
+      document.getElementById('authOverlay').style.display = 'none';
+      document.getElementById('mainApp').style.display = 'block';
+      const name = userName || localStorage.getItem("app_user_name") || sessionStorage.getItem("app_user_name") || "Admin";
+      document.getElementById('displayUsername').innerText = name;
+    }
+
+    function showAuth() {
+      document.getElementById('authOverlay').style.display = 'flex';
+      document.getElementById('mainApp').style.display = 'none';
+    }
+
+    function logout() {
+      if (confirm("Bạn có chắc chắn muốn đăng xuất khỏi hệ thống?")) {
+        localStorage.removeItem(AUTH_CONFIG.sessionKey);
+        sessionStorage.removeItem(AUTH_CONFIG.sessionKey);
+        location.reload();
+      }
+    }
+
+    // ==========================================
+    // CẤU HÌNH SERVER & WEBSITES
+    // ==========================================
     const SERVER_URL = "https://unavailable-earn-nursing-nowhere.trycloudflare.com"; 
 
     const brands = {
