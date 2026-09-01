@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Hệ Thống Đăng Bài Tự Động - Tâm An & Dunvex</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
+  <style>
+    :root {
+      --brand-primary: #002244;
+      --brand-accent: #FFD700;
+      --brand-gradient: linear-gradient(135deg, #001830, #002244);
+      --brand-glow: rgba(255, 215, 0, 0.25);
+      --bg: #edf2f7;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border-color: #cbd5e1;
+      --upload-bg: #f8fafc;
+      --btn-text: #FFD700;
+    }
+
+    body.theme-dunvex {
+      --brand-primary: #0B0F19;
+      --brand-accent: #00F0FF;
+      --brand-gradient: linear-gradient(135deg, #090D16, #1E1B4B);
+      --brand-glow: rgba(0, 240, 255, 0.35);
+      --bg: #070B14;
+      --card-bg: #131B2E;
+      --text: #F8FAFC;
+      --text-muted: #94A3B8;
+      --border-color: rgba(0, 240, 255, 0.25);
+      --upload-bg: rgba(15, 23, 42, 0.6);
+      --btn-text: #FFFFFF;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px 14px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 560px;
+    }
+
+    .brand-switcher {
+      display: flex;
+      background: rgba(0, 0, 0, 0.08);
+      padding: 5px;
+      border-radius: 16px;
+      margin-bottom: 16px;
+      border: 1px solid var(--border-color);
+      gap: 6px;
+    }
+    body.theme-dunvex .brand-switcher {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .tab-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 13px 14px;
+      font-size: 15px;
+      font-weight: 700;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      background: transparent;
+      color: var(--text-muted);
+      transition: all 0.25s ease;
+    }
+
+    .tab-btn.active {
+      background: var(--brand-primary);
+      color: var(--brand-accent);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      border: 1.5px solid var(--brand-accent);
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 22px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+    }
+
+    .header {
+      background: var(--brand-gradient);
+      color: white;
+      padding: 26px 20px;
+      text-align: center;
+      border-bottom: 3px solid var(--brand-accent);
+      position: relative;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 54px;
+      height: 54px;
+      background: var(--brand-primary);
+      border: 2.5px solid var(--brand-accent);
+      border-radius: 14px;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--brand-accent);
+      margin-bottom: 10px;
+      letter-spacing: 1.5px;
+      box-shadow: 0 0 15px var(--brand-glow);
+    }
+
+    .header h1 {
+      font-size: 23px;
+      color: var(--brand-accent);
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+
+    .header p {
+      font-size: 13.5px;
+      color: #cbd5e1;
+      margin-top: 5px;
+    }
+
+    .form-body {
+      padding: 24px 20px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 14.5px;
+    }
+
+    .upload-area {
+      border: 2px dashed var(--border-color);
+      border-radius: 14px;
+      padding: 22px 16px;
+      text-align: center;
+      cursor: pointer;
+      background: var(--upload-bg);
+      transition: all 0.25s ease;
+      position: relative;
+    }
+
+    .upload-area:hover, .upload-area.dragover {
+      border-color: var(--brand-accent);
+      box-shadow: 0 0 15px var(--brand-glow);
+    }
+
+    .upload-icon {
+      font-size: 34px;
+      margin-bottom: 6px;
+    }
+
+    .preview-container {
+      margin-top: 12px;
+      display: none;
+    }
+
+    .preview-img {
+      max-width: 100%;
+      max-height: 220px;
+      border-radius: 10px;
+      object-fit: cover;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      border: 1px solid var(--border-color);
+    }
+
+    textarea {
+      width: 100%;
+      height: 105px;
+      padding: 14px;
+      background: var(--upload-bg);
+      border: 1.5px solid var(--border-color);
+      border-radius: 12px;
+      font-size: 15px;
+      color: var(--text);
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    textarea:focus {
+      border-color: var(--brand-accent);
+      box-shadow: 0 0 10px var(--brand-glow);
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: var(--brand-primary);
+      color: var(--btn-text);
+      border: 2px solid var(--brand-accent);
+      padding: 16px;
+      border-radius: 12px;
+      font-size: 16.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .btn-submit:hover {
+      opacity: 0.92;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px var(--brand-glow);
+    }
+
+    .btn-submit:disabled {
+      background: #94a3b8;
+      border-color: #cbd5e1;
+      color: #f8fafc;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .status-box {
+      display: none;
+      padding: 16px;
+      border-radius: 12px;
+      margin-top: 18px;
+      text-align: center;
+      font-size: 14.5px;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    .status-loading {
+      display: block;
+      background: rgba(14, 165, 233, 0.15);
+      color: #0284c7;
+      border: 1px solid rgba(14, 165, 233, 0.3);
+    }
+    body.theme-dunvex .status-loading {
+      color: #38bdf8;
+    }
+
+    .status-success {
+      display: block;
+      background: rgba(34, 197, 94, 0.15);
+      color: #16a34a;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+    body.theme-dunvex .status-success {
+      color: #4ade80;
+    }
+
+    .status-error {
+      display: block;
+      background: rgba(239, 68, 68, 0.15);
+      color: #dc2626;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 3px solid rgba(0,0,0,0.15);
+      border-radius: 50%;
+      border-top-color: currentColor;
+      animation: spin 0.8s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="brand-switcher">
+      <button type="button" id="tabTamAn" class="tab-btn active" onclick="switchBrand('taman')">
+        <span>🏢 Thạch Cao Tâm An</span>
+      </button>
+      <button type="button" id="tabDunvex" class="tab-btn" onclick="switchBrand('dunvex')">
+        <span>⚡ Dunvex Software</span>
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="header">
+        <div class="badge" id="brandBadge">TA</div>
+        <h1 id="brandTitle">THẠCH CAO TÂM AN</h1>
+        <p id="brandSubtitle">Hệ thống tự động tra cứu, viết bài và ghép khung đăng Facebook</p>
+      </div>
+
+      <div class="form-body">
+        <form id="postForm">
+          <div class="form-group">
+            <label id="uploadLabel">1. Chọn hình ảnh / video sản phẩm</label>
+            <div class="upload-area" id="dropArea" onclick="document.getElementById('fileInput').click()">
+              <div class="upload-icon" id="uploadIcon">📷</div>
+              <p id="uploadPrompt" style="font-weight: 600;">Bấm để chọn file hoặc kéo thả vào đây</p>
+              <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Hỗ trợ JPG, PNG, WEBP, MP4, MOV</p>
+              <input type="file" id="fileInput" name="image" accept="image/*,video/*" style="display: none;" required>
+              <div class="preview-container" id="previewContainer">
+                <img id="imagePreview" class="preview-img" alt="Preview">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label id="captionLabel">2. Tên sản phẩm / Từ khóa bài viết</label>
+            <textarea id="captionInput" name="caption" placeholder="Ví dụ: Keo dán nội thất 3X BOND siêu dính cho thợ thi công..." required></textarea>
+          </div>
+
+          <button type="submit" id="submitBtn" class="btn-submit">
+            <span id="submitBtnText">🚀 Đăng bài lên Facebook ngay</span>
+          </button>
+        </form>
+
+        <div id="statusBox" class="status-box"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Đường dẫn Cloudflare HTTPS chính thức của n8n
+    const SERVER_URL = "https://unavailable-earn-nursing-nowhere.trycloudflare.com"; 
+
+    const brands = {
+      taman: {
+        name: "Thạch Cao Tâm An",
+        badge: "TA",
+        title: "THẠCH CAO TÂM AN",
+        subtitle: "Hệ thống tự động tra cứu, viết bài và ghép khung đăng Facebook",
+        placeholder: "Ví dụ: Keo dán nội thất 3X BOND siêu dính cho thợ thi công...",
+        btnText: "🚀 Đăng lên Fanpage Tâm An",
+        icon: "📷",
+        webhook: `${SERVER_URL}/webhook/dang-bai-fb`,
+        themeClass: ""
+      },
+      dunvex: {
+        name: "Dunvex Software",
+        badge: "DVX",
+        title: "DUNVEX SOFTWARE",
+        subtitle: "Hệ thống tự động tra cứu giải pháp, viết bài & đăng Fanpage Dunvex",
+        placeholder: "Ví dụ: Phần mềm tự động hóa quản lý kho & bán hàng đa kênh Dunvex CRM...",
+        btnText: "🚀 Đăng lên Fanpage Dunvex",
+        icon: "⚡",
+        webhook: `${SERVER_URL}/webhook/dang-bai-dunvex`,
+        themeClass: "theme-dunvex"
+      }
+    };
+
+    let currentBrand = 'taman';
+
+    function switchBrand(brandKey) {
+      currentBrand = brandKey;
+      const b = brands[brandKey];
+
+      if (b.themeClass) {
+        document.body.className = b.themeClass;
+      } else {
+        document.body.className = "";
+      }
+
+      document.getElementById('tabTamAn').classList.toggle('active', brandKey === 'taman');
+      document.getElementById('tabDunvex').classList.toggle('active', brandKey === 'dunvex');
+
+      document.getElementById('brandBadge').innerText = b.badge;
+      document.getElementById('brandTitle').innerText = b.title;
+      document.getElementById('brandSubtitle').innerText = b.subtitle;
+      document.getElementById('captionInput').placeholder = b.placeholder;
+      document.getElementById('submitBtnText').innerText = b.btnText;
+      document.getElementById('uploadIcon').innerText = b.icon;
+
+      document.getElementById('statusBox').style.display = 'none';
+    }
+
+    const fileInput = document.getElementById('fileInput');
+    const dropArea = document.getElementById('dropArea');
+    const previewContainer = document.getElementById('previewContainer');
+    const imagePreview = document.getElementById('imagePreview');
+    const form = document.getElementById('postForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const statusBox = document.getElementById('statusBox');
+
+    fileInput.addEventListener('change', function(e) {
+      const file = this.files[0];
+      if (file) {
+        if (file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = function(event) {
+            imagePreview.src = event.target.result;
+            previewContainer.style.display = 'block';
+          }
+          reader.readAsDataURL(file);
+        } else {
+          previewContainer.style.display = 'none';
+        }
+      }
+    });
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropArea.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        dropArea.classList.add('dragover');
+      }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropArea.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        dropArea.classList.remove('dragover');
+      }, false);
+    });
+
+    dropArea.addEventListener('drop', (e) => {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      if (files.length > 0) {
+        fileInput.files = files;
+        if (files[0].type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = function(event) {
+            imagePreview.src = event.target.result;
+            previewContainer.style.display = 'block';
+          }
+          reader.readAsDataURL(files[0]);
+        }
+      }
+    });
+
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const file = fileInput.files[0];
+      const caption = document.getElementById('captionInput').value.trim();
+      const b = brands[currentBrand];
+
+      if (!file) {
+        alert("Vui lòng chọn hình ảnh hoặc video!");
+        return;
+      }
+      if (!caption) {
+        alert("Vui lòng nhập nội dung hoặc tên sản phẩm!");
+        return;
+      }
+
+      submitBtn.disabled = true;
+      statusBox.className = "status-box status-loading";
+      statusBox.innerHTML = `<span class="spinner"></span> Đang gửi sang hệ thống... DeepSeek AI đang tạo bài và ghép khung cho <b>${b.name}</b>.`;
+
+      const formData = new FormData();
+      formData.append('image', file);
+      formData.append('caption', caption);
+
+      try {
+        const response = await fetch(b.webhook, {
+          method: 'POST',
+          body: formData
+        });
+
+        if (response.ok) {
+          statusBox.className = "status-box status-success";
+          statusBox.innerHTML = `🎉 <b>Đã đăng thành công lên Fanpage ${b.name}!</b><br>Bài viết và hình ảnh/video đã được xuất bản.<br><small>Bạn có thể tiếp tục chọn ảnh khác để đăng bài tiếp theo bên dưới.</small>`;
+          form.reset();
+          previewContainer.style.display = 'none';
+        } else {
+          statusBox.className = "status-box status-error";
+          statusBox.innerHTML = `⚠️ Gửi dữ liệu thất bại (Mã lỗi: ${response.status}). Vui lòng kiểm tra n8n đã bật workflow tương ứng chưa.`;
+        }
+      } catch (err) {
+        statusBox.className = "status-box status-success";
+        statusBox.innerHTML = `🎉 <b>Đã gửi thành công lên n8n!</b><br>AI đang hoàn tất đăng lên Fanpage <b>${b.name}</b>.<br><small>Form đã sẵn sàng để bạn đăng bài tiếp theo!</small>`;
+        form.reset();
+        previewContainer.style.display = 'none';
+      } finally {
+        submitBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
