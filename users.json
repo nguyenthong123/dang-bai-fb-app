@@ -1,0 +1,11 @@
+[
+  {
+    "id": "master-admin-01",
+    "email": "thachcao.taman@gmail.com",
+    "password": "ta123",
+    "fullName": "Quản Trị Viên - Tâm An",
+    "role": "superadmin",
+    "status": "approved",
+    "createdAt": "2026-09-01T08:00:00.000Z"
+  }
+]

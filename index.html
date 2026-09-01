@@ -58,16 +58,16 @@
       max-width: 560px;
     }
 
-    /* Màn hình Đăng nhập (Auth Screen) */
+    /* Màn hình Khóa & Đăng nhập / Đăng ký */
     .auth-overlay {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(11, 15, 25, 0.94);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      background: rgba(11, 15, 25, 0.95);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -78,10 +78,10 @@
     .auth-card {
       background: #131B2E;
       width: 100%;
-      max-width: 420px;
+      max-width: 440px;
       border-radius: 24px;
-      padding: 32px 26px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(0, 240, 255, 0.2);
+      padding: 30px 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 35px rgba(0, 240, 255, 0.25);
       border: 1px solid rgba(0, 240, 255, 0.3);
       text-align: center;
       color: #F8FAFC;
@@ -91,13 +91,13 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 60px;
-      height: 60px;
+      width: 56px;
+      height: 56px;
       background: linear-gradient(135deg, #0F172A, #1E1B4B);
       border: 2.5px solid #00F0FF;
       border-radius: 16px;
-      font-size: 26px;
-      margin-bottom: 14px;
+      font-size: 24px;
+      margin-bottom: 12px;
       box-shadow: 0 0 20px rgba(0, 240, 255, 0.35);
     }
 
@@ -105,23 +105,51 @@
       font-size: 22px;
       font-weight: 800;
       color: #FFFFFF;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
     .auth-card p {
       font-size: 13.5px;
       color: #94A3B8;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
+    }
+
+    .auth-tabs {
+      display: flex;
+      background: rgba(15, 23, 42, 0.8);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(0, 240, 255, 0.2);
+    }
+
+    .auth-tab-btn {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      background: transparent;
+      color: #94A3B8;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .auth-tab-btn.active {
+      background: #0284C7;
+      color: #FFFFFF;
+      box-shadow: 0 2px 10px rgba(2, 132, 199, 0.4);
     }
 
     .auth-input-group {
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       text-align: left;
     }
 
     .auth-input-group label {
       display: block;
-      font-size: 13.5px;
+      font-size: 13px;
       font-weight: 600;
       color: #CBD5E1;
       margin-bottom: 6px;
@@ -129,11 +157,11 @@
 
     .auth-input {
       width: 100%;
-      padding: 14px 16px;
-      background: rgba(15, 23, 42, 0.8);
-      border: 1.5px solid rgba(0, 240, 255, 0.3);
+      padding: 13px 15px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1.5px solid rgba(0, 240, 255, 0.25);
       border-radius: 12px;
-      font-size: 16px;
+      font-size: 15px;
       color: #FFFFFF;
       outline: none;
       transition: all 0.2s;
@@ -141,7 +169,7 @@
 
     .auth-input:focus {
       border-color: #00F0FF;
-      box-shadow: 0 0 12px rgba(0, 240, 255, 0.3);
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
     }
 
     .auth-btn {
@@ -149,7 +177,7 @@
       background: linear-gradient(135deg, #0284C7, #0EA5E9);
       color: #FFFFFF;
       border: none;
-      padding: 15px;
+      padding: 14px;
       border-radius: 12px;
       font-size: 16px;
       font-weight: 700;
@@ -164,21 +192,183 @@
       transform: translateY(-1px);
     }
 
-    .auth-error {
+    .auth-alert {
       display: none;
-      color: #F87171;
+      padding: 12px;
+      border-radius: 10px;
       font-size: 13px;
-      margin-top: 10px;
+      margin-top: 14px;
       font-weight: 500;
+      line-height: 1.4;
     }
 
-    /* Thanh Header Top (User info & Logout) */
+    .auth-alert.error {
+      background: rgba(239, 68, 68, 0.15);
+      color: #F87171;
+      border: 1px solid rgba(248, 113, 113, 0.3);
+    }
+
+    .auth-alert.success {
+      background: rgba(34, 197, 94, 0.15);
+      color: #4ADE80;
+      border: 1px solid rgba(74, 222, 128, 0.3);
+    }
+
+    .auth-alert.warning {
+      background: rgba(234, 179, 8, 0.15);
+      color: #FACC15;
+      border: 1px solid rgba(250, 204, 21, 0.3);
+    }
+
+    /* Modal Bảng Quản Trị Phê Duyệt (Admin Modal) */
+    .admin-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(10px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      padding: 16px;
+    }
+
+    .admin-card {
+      background: #1E293B;
+      width: 100%;
+      max-width: 680px;
+      max-height: 90vh;
+      border-radius: 20px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.8);
+      border: 1.5px solid #FFD700;
+      display: flex;
+      flex-direction: column;
+      color: #F8FAFC;
+      overflow: hidden;
+    }
+
+    .admin-header {
+      background: linear-gradient(135deg, #001830, #002244);
+      padding: 18px 24px;
+      border-bottom: 2px solid #FFD700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .admin-header h3 {
+      color: #FFD700;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .admin-close {
+      background: transparent;
+      border: none;
+      color: #94A3B8;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .admin-close:hover {
+      color: #FFFFFF;
+    }
+
+    .admin-body {
+      padding: 20px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .user-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+    }
+
+    .user-table th, .user-table td {
+      padding: 12px 10px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .user-table th {
+      color: #94A3B8;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 11.5px;
+    }
+
+    .badge-status {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 700;
+    }
+
+    .badge-approved {
+      background: rgba(34, 197, 94, 0.2);
+      color: #4ADE80;
+      border: 1px solid rgba(74, 222, 128, 0.4);
+    }
+
+    .badge-pending {
+      background: rgba(234, 179, 8, 0.2);
+      color: #FACC15;
+      border: 1px solid rgba(250, 204, 21, 0.4);
+    }
+
+    .badge-blocked {
+      background: rgba(239, 68, 68, 0.2);
+      color: #F87171;
+      border: 1px solid rgba(248, 113, 113, 0.4);
+    }
+
+    .action-btn {
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      margin-right: 4px;
+      transition: opacity 0.2s;
+    }
+
+    .action-btn:hover {
+      opacity: 0.85;
+    }
+
+    .btn-approve {
+      background: #16A34A;
+      color: white;
+    }
+
+    .btn-block {
+      background: #EAB308;
+      color: #000;
+    }
+
+    .btn-delete {
+      background: #DC2626;
+      color: white;
+    }
+
+    /* Top Bar */
     .top-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 12px;
       padding: 0 4px;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
     .user-tag {
@@ -190,16 +380,36 @@
       gap: 6px;
     }
 
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-admin-panel {
+      background: linear-gradient(135deg, #B45309, #D97706);
+      color: #FFFFFF;
+      border: 1px solid #FFD700;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 2px 8px rgba(217, 119, 6, 0.4);
+    }
+
     .btn-logout {
       background: transparent;
       border: 1px solid var(--border-color);
       color: var(--text-muted);
-      padding: 5px 12px;
+      padding: 6px 12px;
       border-radius: 8px;
       font-size: 12.5px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s;
     }
 
     .btn-logout:hover {
@@ -235,7 +445,6 @@
       cursor: pointer;
       background: transparent;
       color: var(--text-muted);
-      transition: all 0.25s ease;
     }
 
     .tab-btn.active {
@@ -314,7 +523,6 @@
       text-align: center;
       cursor: pointer;
       background: var(--upload-bg);
-      transition: all 0.25s ease;
       position: relative;
     }
 
@@ -371,7 +579,6 @@
       font-size: 16.5px;
       font-weight: 700;
       cursor: pointer;
-      transition: all 0.25s ease;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -450,45 +657,109 @@
 </head>
 <body>
 
-  <!-- Màn hình Khóa Bảo Mật (Authentication Modal) -->
+  <!-- Màn hình Xác Thực & Đăng Ký / Đăng Nhập -->
   <div id="authOverlay" class="auth-overlay">
     <div class="auth-card">
       <div class="auth-badge">🔒</div>
-      <h2>Xác Thực Bảo Mật</h2>
-      <p>Vui lòng đăng nhập để sử dụng hệ thống đăng bài</p>
+      <h2>Hệ Thống Đăng Bài</h2>
+      <p>Bảo mật & Phân quyền quản trị viên</p>
 
-      <form id="authForm">
+      <div class="auth-tabs">
+        <button type="button" id="tabLogin" class="auth-tab-btn active" onclick="setAuthMode('login')">Đăng Nhập</button>
+        <button type="button" id="tabRegister" class="auth-tab-btn" onclick="setAuthMode('register')">Đăng Ký Mới</button>
+      </div>
+
+      <!-- Form Đăng Nhập -->
+      <form id="loginForm">
         <div class="auth-input-group">
-          <label>Tài khoản</label>
-          <input type="text" id="usernameInput" class="auth-input" placeholder="Nhập tên đăng nhập..." required autocomplete="username">
+          <label>Email đăng nhập</label>
+          <input type="email" id="loginEmail" class="auth-input" placeholder="thachcao.taman@gmail.com" required autocomplete="email">
         </div>
 
         <div class="auth-input-group">
           <label>Mật khẩu</label>
-          <input type="password" id="passwordInput" class="auth-input" placeholder="Nhập mật khẩu..." required autocomplete="current-password">
+          <input type="password" id="loginPass" class="auth-input" placeholder="Nhập mật khẩu..." required autocomplete="current-password">
         </div>
 
-        <div style="text-align: left; margin: 12px 0; font-size: 13.5px; color: #94A3B8; display: flex; align-items: center; gap: 8px;">
+        <div style="text-align: left; margin: 10px 0; font-size: 13px; color: #94A3B8; display: flex; align-items: center; gap: 8px;">
           <input type="checkbox" id="rememberMe" checked style="width: 16px; height: 16px; cursor: pointer;">
           <label for="rememberMe" style="margin-bottom: 0; cursor: pointer; color: #CBD5E1;">Ghi nhớ đăng nhập trên thiết bị này</label>
         </div>
 
         <button type="submit" class="auth-btn">
-          <span>🚀 Đăng Nhập Hệ Thống</span>
+          <span>🚀 Đăng Nhập Ngay</span>
         </button>
-
-        <div id="authError" class="auth-error">⚠️ Tên tài khoản hoặc mật khẩu không chính xác!</div>
       </form>
+
+      <!-- Form Đăng Ký Mới -->
+      <form id="registerForm" style="display: none;">
+        <div class="auth-input-group">
+          <label>Họ và tên người dùng</label>
+          <input type="text" id="regName" class="auth-input" placeholder="Ví dụ: Nguyễn Văn A" required>
+        </div>
+
+        <div class="auth-input-group">
+          <label>Email đăng ký</label>
+          <input type="email" id="regEmail" class="auth-input" placeholder="nhanvien@gmail.com" required>
+        </div>
+
+        <div class="auth-input-group">
+          <label>Mật khẩu</label>
+          <input type="password" id="regPass" class="auth-input" placeholder="Tối thiểu 6 ký tự..." required minlength="6">
+        </div>
+
+        <button type="submit" class="auth-btn" style="background: linear-gradient(135deg, #10B981, #059669);">
+          <span>📝 Gửi Yêu Cầu Đăng Ký</span>
+        </button>
+      </form>
+
+      <div id="authAlert" class="auth-alert"></div>
     </div>
   </div>
 
-  <!-- Giao diện Chính -->
+  <!-- Modal Bảng Phê Duyệt Tài Khoản (Dành riêng cho thachcao.taman@gmail.com) -->
+  <div id="adminModal" class="admin-modal">
+    <div class="admin-card">
+      <div class="admin-header">
+        <h3>👑 Bảng Quản Trị & Phê Duyệt Tài Khoản</h3>
+        <button type="button" class="admin-close" onclick="closeAdminModal()">✕</button>
+      </div>
+      <div class="admin-body">
+        <div style="margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 13px; color: #94A3B8;">Danh sách tài khoản trong hệ thống:</span>
+          <button type="button" onclick="resetDefaultAccounts()" style="background: transparent; border: 1px dashed #64748b; color: #94A3B8; font-size: 12px; padding: 4px 8px; border-radius: 6px; cursor: pointer;">Khôi phục data gốc</button>
+        </div>
+        <div style="overflow-x: auto;">
+          <table class="user-table">
+            <thead>
+              <tr>
+                <th>Họ Tên</th>
+                <th>Email</th>
+                <th>Trạng Thái</th>
+                <th>Hành Động</th>
+              </tr>
+            </thead>
+            <tbody id="userTableBody">
+              <!-- Render động -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Giao diện Ứng dụng Chính -->
   <div class="container" id="mainApp" style="display: none;">
     <div class="top-bar">
       <div class="user-tag">
-        <span>🟢 Đã đăng nhập:</span> <b id="displayUsername" style="color: var(--text);">Admin</b>
+        <span>🟢 Đăng nhập:</span> <b id="displayEmail" style="color: var(--text);"></b>
       </div>
-      <button type="button" class="btn-logout" onclick="logout()">🔒 Đăng xuất</button>
+      <div class="top-actions">
+        <button type="button" id="btnAdminPanel" class="btn-admin-panel" onclick="openAdminModal()">
+          <span>👑 Phê Duyệt</span> <span id="pendingCountBadge" style="background:#EF4444;color:white;padding:2px 6px;border-radius:10px;font-size:11px;">0</span>
+        </button>
+        <button type="button" class="btn-logout" onclick="logout()">🔒 Đăng xuất</button>
+      </div>
     </div>
 
     <div class="brand-switcher">
@@ -539,69 +810,271 @@
 
   <script>
     // ==========================================
-    // CẤU HÌNH TÀI KHOẢN BẢO MẬT
+    // CƠ SỞ DỮ LIỆU TÀI KHOẢN & BẢO MẬT
     // ==========================================
-    const AUTH_CONFIG = {
-      defaultUser: "admin",
-      defaultPass: "ta123", // Mật khẩu bảo mật
-      sessionKey: "app_auth_session_v1"
-    };
+    const SUPER_ADMIN_EMAIL = "thachcao.taman@gmail.com";
+    const DB_STORAGE_KEY = "taman_users_db_v2";
+    const SESSION_STORAGE_KEY = "taman_auth_session_v2";
 
-    // Kiểm tra phiên đăng nhập khi mở trang
-    window.addEventListener('DOMContentLoaded', () => {
-      const savedAuth = localStorage.getItem(AUTH_CONFIG.sessionKey) || sessionStorage.getItem(AUTH_CONFIG.sessionKey);
-      if (savedAuth === "authenticated") {
-        showApp();
-      } else {
-        showAuth();
+    // Khởi tạo data mặc định có sẵn thachcao.taman@gmail.com / ta123
+    const DEFAULT_ACCOUNTS = [
+      {
+        id: "master-admin-01",
+        email: "thachcao.taman@gmail.com",
+        password: "ta123",
+        fullName: "Quản Trị Viên (Tâm An)",
+        role: "superadmin",
+        status: "approved",
+        createdAt: "2026-09-01T08:00:00.000Z"
       }
-    });
+    ];
 
-    document.getElementById('authForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const user = document.getElementById('usernameInput').value.trim();
-      const pass = document.getElementById('passwordInput').value;
-      const remember = document.getElementById('rememberMe').checked;
-      const errorBox = document.getElementById('authError');
-
-      // Cho phép đăng nhập bằng tài khoản admin / ta123 hoặc bất kỳ tên nào với mật khẩu ta123
-      if (pass === AUTH_CONFIG.defaultPass || (user.toLowerCase() === AUTH_CONFIG.defaultUser && pass === AUTH_CONFIG.defaultPass)) {
-        errorBox.style.display = 'none';
-        if (remember) {
-          localStorage.setItem(AUTH_CONFIG.sessionKey, "authenticated");
-          localStorage.setItem("app_user_name", user || "Admin");
-        } else {
-          sessionStorage.setItem(AUTH_CONFIG.sessionKey, "authenticated");
-          sessionStorage.setItem("app_user_name", user || "Admin");
+    function getUsersDB() {
+      const data = localStorage.getItem(DB_STORAGE_KEY);
+      if (!data) {
+        localStorage.setItem(DB_STORAGE_KEY, JSON.stringify(DEFAULT_ACCOUNTS));
+        return DEFAULT_ACCOUNTS;
+      }
+      try {
+        const users = JSON.parse(data);
+        // Đảm bảo superadmin luôn tồn tại
+        if (!users.find(u => u.email.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase())) {
+          users.unshift(DEFAULT_ACCOUNTS[0]);
+          localStorage.setItem(DB_STORAGE_KEY, JSON.stringify(users));
         }
-        showApp(user || "Admin");
-      } else {
-        errorBox.style.display = 'block';
+        return users;
+      } catch (e) {
+        return DEFAULT_ACCOUNTS;
       }
-    });
-
-    function showApp(userName) {
-      document.getElementById('authOverlay').style.display = 'none';
-      document.getElementById('mainApp').style.display = 'block';
-      const name = userName || localStorage.getItem("app_user_name") || sessionStorage.getItem("app_user_name") || "Admin";
-      document.getElementById('displayUsername').innerText = name;
     }
 
-    function showAuth() {
-      document.getElementById('authOverlay').style.display = 'flex';
-      document.getElementById('mainApp').style.display = 'none';
+    function saveUsersDB(users) {
+      localStorage.setItem(DB_STORAGE_KEY, JSON.stringify(users));
+    }
+
+    function resetDefaultAccounts() {
+      if (confirm("Khôi phục danh sách về tài khoản mặc định?")) {
+        localStorage.setItem(DB_STORAGE_KEY, JSON.stringify(DEFAULT_ACCOUNTS));
+        renderUserTable();
+        alert("Đã khôi phục thành công!");
+      }
+    }
+
+    let authMode = 'login';
+    function setAuthMode(mode) {
+      authMode = mode;
+      document.getElementById('tabLogin').classList.toggle('active', mode === 'login');
+      document.getElementById('tabRegister').classList.toggle('active', mode === 'register');
+      document.getElementById('loginForm').style.display = mode === 'login' ? 'block' : 'none';
+      document.getElementById('registerForm').style.display = mode === 'register' ? 'block' : 'none';
+      hideAuthAlert();
+    }
+
+    function showAuthAlert(msg, type = 'error') {
+      const el = document.getElementById('authAlert');
+      el.className = `auth-alert ${type}`;
+      el.innerHTML = msg;
+      el.style.display = 'block';
+    }
+
+    function hideAuthAlert() {
+      document.getElementById('authAlert').style.display = 'none';
+    }
+
+    // Xử lý Đăng Nhập
+    document.getElementById('loginForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+      const pass = document.getElementById('loginPass').value;
+      const remember = document.getElementById('rememberMe').checked;
+      const users = getUsersDB();
+
+      const user = users.find(u => u.email.toLowerCase() === email);
+
+      if (!user || user.password !== pass) {
+        showAuthAlert("⚠️ Email hoặc mật khẩu không chính xác!", "error");
+        return;
+      }
+
+      if (user.status === "pending") {
+        showAuthAlert("⏳ Tài khoản của bạn đang <b>chờ duyệt</b>. Vui lòng liên hệ Quản trị viên (thachcao.taman@gmail.com) để phê duyệt quyền sử dụng.", "warning");
+        return;
+      }
+
+      if (user.status === "blocked") {
+        showAuthAlert("⛔ Tài khoản này đã bị tạm khóa. Vui lòng liên hệ Quản trị viên.", "error");
+        return;
+      }
+
+      // Đăng nhập thành công
+      const sessionData = {
+        email: user.email,
+        fullName: user.fullName,
+        role: user.role
+      };
+
+      if (remember) {
+        localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(sessionData));
+      } else {
+        sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(sessionData));
+      }
+
+      showApp(sessionData);
+    });
+
+    // Xử lý Đăng Ký Mới
+    document.getElementById('registerForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('regName').value.trim();
+      const email = document.getElementById('regEmail').value.trim().toLowerCase();
+      const pass = document.getElementById('regPass').value;
+      const users = getUsersDB();
+
+      if (users.find(u => u.email.toLowerCase() === email)) {
+        showAuthAlert("⚠️ Email này đã được đăng ký trong hệ thống!", "error");
+        return;
+      }
+
+      const newUser = {
+        id: "user-" + Date.now(),
+        email: email,
+        password: pass,
+        fullName: name,
+        role: "member",
+        status: "pending", // Mặc định chờ duyệt
+        createdAt: new Date().toISOString()
+      };
+
+      users.push(newUser);
+      saveUsersDB(users);
+
+      document.getElementById('registerForm').reset();
+      showAuthAlert("🎉 <b>Gửi đăng ký thành công!</b><br>Tài khoản của bạn đã được chuyển vào hàng đợi. Quản trị viên (thachcao.taman@gmail.com) sẽ phê duyệt để bạn bắt đầu sử dụng.", "success");
+    });
+
+    function getCurrentSession() {
+      const raw = localStorage.getItem(SESSION_STORAGE_KEY) || sessionStorage.getItem(SESSION_STORAGE_KEY);
+      if (!raw) return null;
+      try { return JSON.parse(raw); } catch(e) { return null; }
+    }
+
+    function showApp(session) {
+      document.getElementById('authOverlay').style.display = 'none';
+      document.getElementById('mainApp').style.display = 'block';
+      document.getElementById('displayEmail').innerText = session.email;
+
+      // Chỉ hiển thị nút Bảng Quản Trị cho thachcao.taman@gmail.com
+      if (session.email.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase()) {
+        document.getElementById('btnAdminPanel').style.display = 'flex';
+        updatePendingBadge();
+      } else {
+        document.getElementById('btnAdminPanel').style.display = 'none';
+      }
     }
 
     function logout() {
-      if (confirm("Bạn có chắc chắn muốn đăng xuất khỏi hệ thống?")) {
-        localStorage.removeItem(AUTH_CONFIG.sessionKey);
-        sessionStorage.removeItem(AUTH_CONFIG.sessionKey);
+      if (confirm("Bạn có chắc chắn muốn đăng xuất?")) {
+        localStorage.removeItem(SESSION_STORAGE_KEY);
+        sessionStorage.removeItem(SESSION_STORAGE_KEY);
         location.reload();
       }
     }
 
     // ==========================================
-    // CẤU HÌNH SERVER & WEBSITES
+    // QUẢN TRỊ VIÊN DUYỆT TÀI KHOẢN
+    // ==========================================
+    function updatePendingBadge() {
+      const users = getUsersDB();
+      const pending = users.filter(u => u.status === 'pending').length;
+      document.getElementById('pendingCountBadge').innerText = pending;
+    }
+
+    function openAdminModal() {
+      renderUserTable();
+      document.getElementById('adminModal').style.display = 'flex';
+    }
+
+    function closeAdminModal() {
+      document.getElementById('adminModal').style.display = 'none';
+      updatePendingBadge();
+    }
+
+    function renderUserTable() {
+      const users = getUsersDB();
+      const tbody = document.getElementById('userTableBody');
+      tbody.innerHTML = '';
+
+      users.forEach(u => {
+        const isMaster = u.email.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase();
+        let statusBadge = '';
+        if (u.status === 'approved') statusBadge = '<span class="badge-status badge-approved">Đã duyệt</span>';
+        else if (u.status === 'pending') statusBadge = '<span class="badge-status badge-pending">Chờ duyệt</span>';
+        else statusBadge = '<span class="badge-status badge-blocked">Đã khóa</span>';
+
+        let actions = '';
+        if (isMaster) {
+          actions = '<span style="font-size:12px;color:#FFD700;font-weight:bold;">👑 Super Admin</span>';
+        } else {
+          if (u.status === 'pending') {
+            actions += `<button class="action-btn btn-approve" onclick="setUserStatus('${u.id}', 'approved')">✅ Duyệt</button>`;
+            actions += `<button class="action-btn btn-block" onclick="setUserStatus('${u.id}', 'blocked')">⛔ Từ chối</button>`;
+          } else if (u.status === 'approved') {
+            actions += `<button class="action-btn btn-block" onclick="setUserStatus('${u.id}', 'blocked')">🔒 Khóa</button>`;
+          } else {
+            actions += `<button class="action-btn btn-approve" onclick="setUserStatus('${u.id}', 'approved')">🔓 Mở khóa</button>`;
+          }
+          actions += `<button class="action-btn btn-delete" onclick="deleteUser('${u.id}')">🗑️</button>`;
+        }
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><b>${u.fullName || 'Thành viên'}</b></td>
+          <td>${u.email}</td>
+          <td>${statusBadge}</td>
+          <td>${actions}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function setUserStatus(userId, newStatus) {
+      const users = getUsersDB();
+      const user = users.find(u => u.id === userId);
+      if (user) {
+        user.status = newStatus;
+        saveUsersDB(users);
+        renderUserTable();
+        updatePendingBadge();
+      }
+    }
+
+    function deleteUser(userId) {
+      if (confirm("Bạn có chắc chắn muốn xóa tài khoản này khỏi hệ thống?")) {
+        let users = getUsersDB();
+        users = users.filter(u => u.id !== userId);
+        saveUsersDB(users);
+        renderUserTable();
+        updatePendingBadge();
+      }
+    }
+
+    // Tự động kiểm tra phiên khi tải trang
+    window.addEventListener('DOMContentLoaded', () => {
+      const session = getCurrentSession();
+      if (session) {
+        // Kiểm tra xem tài khoản còn hợp lệ trong DB không
+        const users = getUsersDB();
+        const valid = users.find(u => u.email.toLowerCase() === session.email.toLowerCase() && u.status === 'approved');
+        if (valid) {
+          showApp(session);
+        } else {
+          logout();
+        }
+      }
+    });
+
+    // ==========================================
+    // CẤU HÌNH SERVER N8N & WEBSITES
     // ==========================================
     const SERVER_URL = "https://unavailable-earn-nursing-nowhere.trycloudflare.com"; 
 
