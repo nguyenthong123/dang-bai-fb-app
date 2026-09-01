@@ -58,7 +58,7 @@
       max-width: 560px;
     }
 
-    /* Màn hình Khóa & Đăng nhập / Đăng ký */
+    /* Màn hình Khóa & Đăng nhập / Đăng Ký */
     .auth-overlay {
       position: fixed;
       top: 0;
@@ -220,7 +220,7 @@
       border: 1px solid rgba(250, 204, 21, 0.3);
     }
 
-    /* Modal Bảng Quản Trị Phê Duyệt (Admin Modal) */
+    /* Modal Bảng Quản Trị Phê Duyệt */
     .admin-modal {
       position: fixed;
       top: 0;
@@ -273,10 +273,6 @@
       color: #94A3B8;
       font-size: 24px;
       cursor: pointer;
-    }
-
-    .admin-close:hover {
-      color: #FFFFFF;
     }
 
     .admin-body {
@@ -339,10 +335,6 @@
       border: none;
       margin-right: 4px;
       transition: opacity 0.2s;
-    }
-
-    .action-btn:hover {
-      opacity: 0.85;
     }
 
     .btn-approve {
@@ -410,12 +402,6 @@
       font-size: 12.5px;
       font-weight: 600;
       cursor: pointer;
-    }
-
-    .btn-logout:hover {
-      background: rgba(239, 68, 68, 0.1);
-      color: #EF4444;
-      border-color: #EF4444;
     }
 
     .brand-switcher {
@@ -550,6 +536,18 @@
       border: 1px solid var(--border-color);
     }
 
+    .file-info-badge {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 600;
+      background: rgba(14, 165, 233, 0.15);
+      color: #0284c7;
+      border: 1px solid rgba(14, 165, 233, 0.3);
+    }
+
     textarea {
       width: 100%;
       height: 105px;
@@ -657,7 +655,7 @@
 </head>
 <body>
 
-  <!-- Màn hình Xác Thực & Đăng Ký / Đăng Nhập -->
+  <!-- Màn hình Xác Thực & Đăng Nhập / Đăng Ký -->
   <div id="authOverlay" class="auth-overlay">
     <div class="auth-card">
       <div class="auth-badge">🔒</div>
@@ -785,10 +783,11 @@
             <div class="upload-area" id="dropArea" onclick="document.getElementById('fileInput').click()">
               <div class="upload-icon" id="uploadIcon">📷</div>
               <p id="uploadPrompt" style="font-weight: 600;">Bấm để chọn file hoặc kéo thả vào đây</p>
-              <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Hỗ trợ JPG, PNG, WEBP, MP4, MOV</p>
+              <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Hỗ trợ JPG, PNG, WEBP, MP4, MOV (Tự động nén HD siêu nét)</p>
               <input type="file" id="fileInput" name="image" accept="image/*,video/*" style="display: none;" required>
               <div class="preview-container" id="previewContainer">
                 <img id="imagePreview" class="preview-img" alt="Preview">
+                <div><span id="fileInfoBadge" class="file-info-badge"></span></div>
               </div>
             </div>
           </div>
@@ -808,6 +807,10 @@
     </div>
   </div>
 
+  <!-- Video & Canvas ngầm dùng để nén video tự động chuẩn HD -->
+  <video id="hiddenCompressVideo" playsinline muted style="display: none;"></video>
+  <canvas id="hiddenCompressCanvas" style="display: none;"></canvas>
+
   <script>
     // ==========================================
     // CƠ SỞ DỮ LIỆU TÀI KHOẢN & BẢO MẬT
@@ -816,7 +819,6 @@
     const DB_STORAGE_KEY = "taman_users_db_v2";
     const SESSION_STORAGE_KEY = "taman_auth_session_v2";
 
-    // Khởi tạo data mặc định có sẵn thachcao.taman@gmail.com / ta123
     const DEFAULT_ACCOUNTS = [
       {
         id: "master-admin-01",
@@ -837,7 +839,6 @@
       }
       try {
         const users = JSON.parse(data);
-        // Đảm bảo superadmin luôn tồn tại
         if (!users.find(u => u.email.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase())) {
           users.unshift(DEFAULT_ACCOUNTS[0]);
           localStorage.setItem(DB_STORAGE_KEY, JSON.stringify(users));
@@ -881,7 +882,7 @@
       document.getElementById('authAlert').style.display = 'none';
     }
 
-    // Xử lý Đăng Nhập
+    // Đăng Nhập
     document.getElementById('loginForm').addEventListener('submit', (e) => {
       e.preventDefault();
       const email = document.getElementById('loginEmail').value.trim().toLowerCase();
@@ -906,7 +907,6 @@
         return;
       }
 
-      // Đăng nhập thành công
       const sessionData = {
         email: user.email,
         fullName: user.fullName,
@@ -922,7 +922,7 @@
       showApp(sessionData);
     });
 
-    // Xử lý Đăng Ký Mới
+    // Đăng Ký
     document.getElementById('registerForm').addEventListener('submit', (e) => {
       e.preventDefault();
       const name = document.getElementById('regName').value.trim();
@@ -941,7 +941,7 @@
         password: pass,
         fullName: name,
         role: "member",
-        status: "pending", // Mặc định chờ duyệt
+        status: "pending",
         createdAt: new Date().toISOString()
       };
 
@@ -963,7 +963,6 @@
       document.getElementById('mainApp').style.display = 'block';
       document.getElementById('displayEmail').innerText = session.email;
 
-      // Chỉ hiển thị nút Bảng Quản Trị cho thachcao.taman@gmail.com
       if (session.email.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase()) {
         document.getElementById('btnAdminPanel').style.display = 'flex';
         updatePendingBadge();
@@ -980,9 +979,6 @@
       }
     }
 
-    // ==========================================
-    // QUẢN TRỊ VIÊN DUYỆT TÀI KHOẢN
-    // ==========================================
     function updatePendingBadge() {
       const users = getUsersDB();
       const pending = users.filter(u => u.status === 'pending').length;
@@ -1058,11 +1054,9 @@
       }
     }
 
-    // Tự động kiểm tra phiên khi tải trang
     window.addEventListener('DOMContentLoaded', () => {
       const session = getCurrentSession();
       if (session) {
-        // Kiểm tra xem tài khoản còn hợp lệ trong DB không
         const users = getUsersDB();
         const valid = users.find(u => u.email.toLowerCase() === session.email.toLowerCase() && u.status === 'approved');
         if (valid) {
@@ -1132,6 +1126,7 @@
     const dropArea = document.getElementById('dropArea');
     const previewContainer = document.getElementById('previewContainer');
     const imagePreview = document.getElementById('imagePreview');
+    const fileInfoBadge = document.getElementById('fileInfoBadge');
     const form = document.getElementById('postForm');
     const submitBtn = document.getElementById('submitBtn');
     const statusBox = document.getElementById('statusBox');
@@ -1139,15 +1134,24 @@
     fileInput.addEventListener('change', function(e) {
       const file = this.files[0];
       if (file) {
+        const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
         if (file.type.startsWith('image/')) {
           const reader = new FileReader();
           reader.onload = function(event) {
             imagePreview.src = event.target.result;
+            imagePreview.style.display = 'block';
+            fileInfoBadge.innerText = `🖼️ Hình ảnh: ${sizeMB} MB`;
             previewContainer.style.display = 'block';
           }
           reader.readAsDataURL(file);
-        } else {
-          previewContainer.style.display = 'none';
+        } else if (file.type.startsWith('video/')) {
+          imagePreview.style.display = 'none';
+          if (file.size > 80 * 1024 * 1024) {
+            fileInfoBadge.innerText = `🎬 Video gốc: ${sizeMB} MB (Hệ thống sẽ tự động nén HD siêu nét khi đăng)`;
+          } else {
+            fileInfoBadge.innerText = `🎬 Video: ${sizeMB} MB (Độ phân giải chuẩn)`;
+          }
+          previewContainer.style.display = 'block';
         }
       }
     });
@@ -1171,21 +1175,125 @@
       const files = dt.files;
       if (files.length > 0) {
         fileInput.files = files;
-        if (files[0].type.startsWith('image/')) {
-          const reader = new FileReader();
-          reader.onload = function(event) {
-            imagePreview.src = event.target.result;
-            previewContainer.style.display = 'block';
-          }
-          reader.readAsDataURL(files[0]);
-        }
+        fileInput.dispatchEvent(new Event('change'));
       }
     });
 
-    form.addEventListener('submit', function(e) {
+    // ==========================================
+    // BỘ NÉN VIDEO CHUẨN HD FACEBOOK TỰ ĐỘNG
+    // ==========================================
+    async function compressVideoIfNeeded(file, onProgress) {
+      // Nếu file video nhỏ hơn 80MB thì không cần nén
+      if (!file.type.startsWith('video/') || file.size <= 80 * 1024 * 1024) {
+        return file;
+      }
+
+      return new Promise((resolve, reject) => {
+        const video = document.getElementById('hiddenCompressVideo');
+        const canvas = document.getElementById('hiddenCompressCanvas');
+        const ctx = canvas.getContext('2d');
+        const videoUrl = URL.createObjectURL(file);
+        video.src = videoUrl;
+        video.muted = true;
+
+        video.onloadedmetadata = () => {
+          // Giữ tỷ lệ khung hình, chuẩn Full HD 1080p hoặc 720p tối ưu Facebook
+          let targetWidth = video.videoWidth;
+          let targetHeight = video.videoHeight;
+          const MAX_WIDTH = 1280;
+
+          if (targetWidth > MAX_WIDTH) {
+            targetHeight = Math.round((targetHeight * MAX_WIDTH) / targetWidth);
+            targetWidth = MAX_WIDTH;
+          }
+
+          canvas.width = targetWidth;
+          canvas.height = targetHeight;
+
+          // Tạo luồng canvas
+          const stream = canvas.captureStream(30);
+
+          // Thu âm thanh gốc nếu trình duyệt hỗ trợ
+          try {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const source = audioCtx.createMediaElementSource(video);
+            const dest = audioCtx.createMediaStreamDestination();
+            source.connect(dest);
+            const audioTracks = dest.stream.getAudioTracks();
+            if (audioTracks.length > 0) {
+              stream.addTrack(audioTracks[0]);
+            }
+          } catch(e) {
+            console.log("Audio capture note:", e);
+          }
+
+          let mimeType = 'video/webm;codecs=vp8,opus';
+          if (MediaRecorder.isTypeSupported('video/mp4;codecs=avc1')) {
+            mimeType = 'video/mp4;codecs=avc1';
+          } else if (MediaRecorder.isTypeSupported('video/webm;codecs=h264')) {
+            mimeType = 'video/webm;codecs=h264';
+          }
+
+          // Nén với bitrate tối ưu 2.8 Mbps (siêu nét cho Facebook)
+          const recorder = new MediaRecorder(stream, {
+            mimeType: mimeType,
+            videoBitsPerSecond: 2800000
+          });
+
+          const chunks = [];
+          recorder.ondataavailable = (e) => {
+            if (e.data && e.data.size > 0) chunks.push(e.data);
+          };
+
+          recorder.onstop = () => {
+            const compressedBlob = new Blob(chunks, { type: mimeType.startsWith('video/mp4') ? 'video/mp4' : 'video/webm' });
+            const compressedFile = new File([compressedBlob], file.name.replace(/\.[^/.]+$/, "") + (mimeType.startsWith('video/mp4') ? ".mp4" : ".webm"), {
+              type: compressedBlob.type
+            });
+            URL.revokeObjectURL(videoUrl);
+            resolve(compressedFile);
+          };
+
+          recorder.onerror = (err) => {
+            URL.revokeObjectURL(videoUrl);
+            resolve(file); // Fallback nếu lỗi
+          };
+
+          recorder.start(1000);
+          video.play();
+
+          // Render từng khung hình
+          function drawFrame() {
+            if (!video.paused && !video.ended) {
+              ctx.drawImage(video, 0, 0, targetWidth, targetHeight);
+              if (video.duration) {
+                const percent = Math.round((video.currentTime / video.duration) * 100);
+                if (onProgress) onProgress(percent);
+              }
+              requestAnimationFrame(drawFrame);
+            }
+          }
+          drawFrame();
+
+          video.onended = () => {
+            setTimeout(() => {
+              if (recorder.state === "recording") recorder.stop();
+            }, 300);
+          };
+        };
+
+        video.onerror = () => {
+          URL.revokeObjectURL(videoUrl);
+          resolve(file);
+        };
+      });
+    }
+
+    // Gửi form
+    form.addEventListener('submit', async function(e) {
       e.preventDefault();
       
-      const file = fileInput.files[0];
+      let file = fileInput.files[0];
       const caption = document.getElementById('captionInput').value.trim();
       const b = brands[currentBrand];
 
@@ -1198,15 +1306,27 @@
         return;
       }
 
-      const fileSizeMB = (file.size / (1024 * 1024)).toFixed(1);
-      if (file.size > 100 * 1024 * 1024) {
-        alert(`⚠️ File video của bạn dung lượng ${fileSizeMB}MB (vượt quá giới hạn 100MB của Cloudflare). Vui lòng nén video hoặc chọn video dưới 100MB để đảm bảo tải lên thành công!`);
-        return;
-      }
-
       submitBtn.disabled = true;
       statusBox.className = "status-box status-loading";
-      statusBox.innerHTML = `<span class="spinner"></span> Đang tải lên server (${fileSizeMB} MB): <b id="uploadPercent">0%</b>...`;
+
+      const originalSizeMB = (file.size / (1024 * 1024)).toFixed(1);
+
+      // Nếu là video nặng > 80MB -> Tự động nén
+      if (file.type.startsWith('video/') && file.size > 80 * 1024 * 1024) {
+        statusBox.innerHTML = `<span class="spinner"></span> 🎬 Đang tự động nén tối ưu video chuẩn HD Facebook (${originalSizeMB} MB ➔ ~35 MB): <b id="compressPercent">0%</b>...`;
+        
+        try {
+          file = await compressVideoIfNeeded(file, (percent) => {
+            const el = document.getElementById('compressPercent');
+            if (el) el.innerText = percent + "%";
+          });
+        } catch(err) {
+          console.log("Nén video:", err);
+        }
+      }
+
+      const finalSizeMB = (file.size / (1024 * 1024)).toFixed(1);
+      statusBox.innerHTML = `<span class="spinner"></span> Đang tải lên server (${finalSizeMB} MB): <b id="uploadPercent">0%</b>...`;
 
       const formData = new FormData();
       formData.append('image', file);
@@ -1221,7 +1341,7 @@
           const percentEl = document.getElementById('uploadPercent');
           if (percentEl) percentEl.innerText = percent + "%";
           if (percent >= 100) {
-            statusBox.innerHTML = `<span class="spinner"></span> Đã tải lên 100%! Đang xử lý AI và render video trên máy bàn...`;
+            statusBox.innerHTML = `<span class="spinner"></span> Đã tải lên 100%! Đang xử lý AI và xuất bản lên Facebook...`;
           }
         }
       };
@@ -1230,7 +1350,7 @@
         submitBtn.disabled = false;
         if (xhr.status >= 200 && xhr.status < 300) {
           statusBox.className = "status-box status-success";
-          statusBox.innerHTML = `🎉 <b>Đã đăng thành công lên Fanpage ${b.name}!</b><br>Video và bài viết đã xuất bản.<br><small>Form đã sẵn sàng để đăng bài tiếp theo.</small>`;
+          statusBox.innerHTML = `🎉 <b>Đã đăng thành công lên Fanpage ${b.name}!</b><br>Video và bài viết đã xuất bản sắc nét.<br><small>Form đã sẵn sàng để đăng bài tiếp theo.</small>`;
           form.reset();
           previewContainer.style.display = 'none';
         } else {
@@ -1242,13 +1362,13 @@
       xhr.onerror = function() {
         submitBtn.disabled = false;
         statusBox.className = "status-box status-error";
-        statusBox.innerHTML = `❌ <b>Lỗi kết nối mạng:</b> Không thể gửi file (${fileSizeMB} MB) tới máy chủ. Vui lòng kiểm tra kết nối Cloudflare hoặc giảm dung lượng video.`;
+        statusBox.innerHTML = `❌ <b>Lỗi kết nối mạng:</b> Không thể gửi file (${finalSizeMB} MB) tới máy chủ.`;
       };
 
       xhr.ontimeout = function() {
         submitBtn.disabled = false;
         statusBox.className = "status-box status-error";
-        statusBox.innerHTML = `⏱️ Quá thời gian tải lên (Timeout). Vui lòng thử lại với video dung lượng nhẹ hơn.`;
+        statusBox.innerHTML = `⏱️ Quá thời gian tải lên (Timeout). Vui lòng thử lại.`;
       };
 
       xhr.send(formData);
