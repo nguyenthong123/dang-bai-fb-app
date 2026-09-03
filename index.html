@@ -531,18 +531,58 @@
       display: none;
     }
 
-    .preview-img {
-      max-width: 100%;
-      max-height: 220px;
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: 10px;
+      max-height: 280px;
+      overflow-y: auto;
+      padding: 4px;
+      margin-bottom: 8px;
+    }
+
+    .preview-item {
+      position: relative;
       border-radius: 10px;
+      overflow: hidden;
+      aspect-ratio: 1 / 1;
+      border: 1.5px solid var(--border-color);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      background: #0f172a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .preview-item img {
+      width: 100%;
+      height: 100%;
       object-fit: cover;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      border: 1px solid var(--border-color);
+      display: block;
+    }
+
+    .preview-item video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .preview-item-badge {
+      position: absolute;
+      bottom: 4px;
+      right: 4px;
+      background: rgba(0, 0, 0, 0.75);
+      color: #fff;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
     }
 
     .file-info-badge {
       display: inline-block;
-      margin-top: 8px;
+      margin-top: 4px;
       padding: 4px 10px;
       border-radius: 8px;
       font-size: 12.5px;
@@ -783,14 +823,14 @@
       <div class="form-body">
         <form id="postForm">
           <div class="form-group">
-            <label id="uploadLabel">1. Chọn hình ảnh / video sản phẩm</label>
+            <label id="uploadLabel">1. Chọn hình ảnh / video sản phẩm (Hỗ trợ chọn nhiều ảnh)</label>
             <div class="upload-area" id="dropArea" onclick="document.getElementById('fileInput').click()">
               <div class="upload-icon" id="uploadIcon">📷</div>
               <p id="uploadPrompt" style="font-weight: 600;">Bấm để chọn file hoặc kéo thả vào đây</p>
-              <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Hỗ trợ JPG, PNG, WEBP, MP4, MOV (Tự động nén & đóng khung chuẩn HD)</p>
-              <input type="file" id="fileInput" name="image" accept="image/*,video/*" style="display: none;" required>
+              <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Hỗ trợ tải lên cùng lúc nhiều hình ảnh (JPG, PNG, WEBP) hoặc Video</p>
+              <input type="file" id="fileInput" name="image" accept="image/*,video/*" multiple style="display: none;">
               <div class="preview-container" id="previewContainer">
-                <img id="imagePreview" class="preview-img" alt="Preview">
+                <div id="previewGrid" class="preview-grid"></div>
                 <div><span id="fileInfoBadge" class="file-info-badge"></span></div>
               </div>
             </div>
@@ -1133,30 +1173,76 @@
     const fileInput = document.getElementById('fileInput');
     const dropArea = document.getElementById('dropArea');
     const previewContainer = document.getElementById('previewContainer');
-    const imagePreview = document.getElementById('imagePreview');
+    const previewGrid = document.getElementById('previewGrid');
     const fileInfoBadge = document.getElementById('fileInfoBadge');
     const form = document.getElementById('postForm');
     const submitBtn = document.getElementById('submitBtn');
     const statusBox = document.getElementById('statusBox');
 
-    fileInput.addEventListener('change', function(e) {
-      const file = this.files[0];
-      if (file) {
-        const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+    let selectedFiles = [];
+
+    function renderPreviews() {
+      previewGrid.innerHTML = '';
+      if (!selectedFiles || selectedFiles.length === 0) {
+        previewContainer.style.display = 'none';
+        return;
+      }
+
+      const totalSizeBytes = selectedFiles.reduce((acc, f) => acc + f.size, 0);
+      const totalSizeMB = (totalSizeBytes / (1024 * 1024)).toFixed(1);
+
+      let imageCount = 0;
+      let videoCount = 0;
+
+      selectedFiles.forEach((file, index) => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'preview-item';
+
+        const badge = document.createElement('span');
+        badge.className = 'preview-item-badge';
+        badge.innerText = `#${index + 1}`;
+
         if (file.type.startsWith('image/')) {
+          imageCount++;
+          const img = document.createElement('img');
           const reader = new FileReader();
-          reader.onload = function(event) {
-            imagePreview.src = event.target.result;
-            imagePreview.style.display = 'block';
-            fileInfoBadge.innerText = `🖼️ Hình ảnh: ${sizeMB} MB`;
-            previewContainer.style.display = 'block';
-          }
+          reader.onload = function(e) {
+            img.src = e.target.result;
+          };
           reader.readAsDataURL(file);
+          itemDiv.appendChild(img);
         } else if (file.type.startsWith('video/')) {
-          imagePreview.style.display = 'none';
-          fileInfoBadge.innerText = `🎬 Video: ${sizeMB} MB (Hệ thống sẽ tự động ghép khung logo ${brands[currentBrand].badge} sắc nét)`;
-          previewContainer.style.display = 'block';
+          videoCount++;
+          const video = document.createElement('video');
+          video.src = URL.createObjectURL(file);
+          video.muted = true;
+          video.playsInline = true;
+          itemDiv.appendChild(video);
         }
+
+        itemDiv.appendChild(badge);
+        previewGrid.appendChild(itemDiv);
+      });
+
+      let infoText = '';
+      if (imageCount > 0 && videoCount > 0) {
+        infoText = `📁 Đã chọn ${imageCount} ảnh + ${videoCount} video (Tổng: ${totalSizeMB} MB)`;
+      } else if (imageCount > 1) {
+        infoText = `🖼️ Đã chọn ${imageCount} hình ảnh (Tổng: ${totalSizeMB} MB)`;
+      } else if (imageCount === 1) {
+        infoText = `🖼️ 1 hình ảnh (${totalSizeMB} MB)`;
+      } else if (videoCount > 0) {
+        infoText = `🎬 ${videoCount} video (${totalSizeMB} MB - Tự động ghép khung chuẩn HD)`;
+      }
+
+      fileInfoBadge.innerText = infoText;
+      previewContainer.style.display = 'block';
+    }
+
+    fileInput.addEventListener('change', function(e) {
+      if (this.files && this.files.length > 0) {
+        selectedFiles = Array.from(this.files);
+        renderPreviews();
       }
     });
 
@@ -1176,10 +1262,10 @@
 
     dropArea.addEventListener('drop', (e) => {
       const dt = e.dataTransfer;
-      const files = dt.files;
-      if (files.length > 0) {
-        fileInput.files = files;
-        fileInput.dispatchEvent(new Event('change'));
+      if (dt.files && dt.files.length > 0) {
+        selectedFiles = Array.from(dt.files);
+        fileInput.files = dt.files;
+        renderPreviews();
       }
     });
 
@@ -1360,14 +1446,14 @@
     form.addEventListener('submit', async function(e) {
       e.preventDefault();
       
-      let file = fileInput.files[0];
+      if (!selectedFiles || selectedFiles.length === 0) {
+        alert("Vui lòng chọn ít nhất 1 hình ảnh hoặc video!");
+        return;
+      }
+
       const caption = document.getElementById('captionInput').value.trim();
       const b = brands[currentBrand];
 
-      if (!file) {
-        alert("Vui lòng chọn hình ảnh hoặc video!");
-        return;
-      }
       if (!caption) {
         alert("Vui lòng nhập nội dung hoặc tên sản phẩm!");
         return;
@@ -1376,27 +1462,39 @@
       submitBtn.disabled = true;
       statusBox.className = "status-box status-loading";
 
-      const originalSizeMB = (file.size / (1024 * 1024)).toFixed(1);
-
-      if (file.type.startsWith('video/')) {
-        statusBox.innerHTML = `<span class="spinner"></span> 🎬 Đang tự động ghép khung logo <b>${b.badge}</b> & nén video chuẩn HD (${originalSizeMB} MB): <b id="compressPercent">0%</b>...`;
-        
-        try {
-          file = await processAndFrameVideo(file, b, (percent) => {
-            const el = document.getElementById('compressPercent');
-            if (el) el.innerText = percent + "%";
-          });
-        } catch(err) {
-          console.log("Xử lý video:", err);
+      const processedFiles = [];
+      for (let i = 0; i < selectedFiles.length; i++) {
+        let f = selectedFiles[i];
+        if (f.type.startsWith('video/')) {
+          const originalSizeMB = (f.size / (1024 * 1024)).toFixed(1);
+          statusBox.innerHTML = `<span class="spinner"></span> 🎬 Đang tự động ghép khung logo <b>${b.badge}</b> & nén video (${i + 1}/${selectedFiles.length} - ${originalSizeMB} MB): <b id="compressPercent">0%</b>...`;
+          try {
+            f = await processAndFrameVideo(f, b, (percent) => {
+              const el = document.getElementById('compressPercent');
+              if (el) el.innerText = percent + "%";
+            });
+          } catch(err) {
+            console.log("Xử lý video:", err);
+          }
         }
+        processedFiles.push(f);
       }
 
-      const finalSizeMB = (file.size / (1024 * 1024)).toFixed(1);
-      statusBox.innerHTML = `<span class="spinner"></span> Đang tải lên server (${finalSizeMB} MB): <b id="uploadPercent">0%</b>...`;
+      const totalSizeBytes = processedFiles.reduce((acc, f) => acc + f.size, 0);
+      const finalSizeMB = (totalSizeBytes / (1024 * 1024)).toFixed(1);
+      const fileCountText = processedFiles.length > 1 ? `${processedFiles.length} files (${finalSizeMB} MB)` : `(${finalSizeMB} MB)`;
+      
+      statusBox.innerHTML = `<span class="spinner"></span> Đang tải lên server ${fileCountText}: <b id="uploadPercent">0%</b>...`;
 
       const formData = new FormData();
-      formData.append('image', file);
+      processedFiles.forEach((file, idx) => {
+        formData.append('image', file);
+        formData.append('images', file);
+        formData.append(`image_${idx}`, file);
+      });
+      formData.append('fileCount', processedFiles.length);
       formData.append('caption', caption);
+      formData.append('brand', currentBrand);
 
       const xhr = new XMLHttpRequest();
       xhr.open('POST', b.webhook, true);
@@ -1416,8 +1514,10 @@
         submitBtn.disabled = false;
         if (xhr.status >= 200 && xhr.status < 300) {
           statusBox.className = "status-box status-success";
-          statusBox.innerHTML = `🎉 <b>Đã đăng thành công lên Fanpage ${b.name}!</b><br>Video có khung logo thương hiệu và bài viết đã xuất bản sắc nét.<br><small>Form đã sẵn sàng để đăng bài tiếp theo.</small>`;
+          statusBox.innerHTML = `🎉 <b>Đã đăng thành công lên Fanpage ${b.name}!</b><br>Đã gửi ${processedFiles.length} file và bài viết đã xuất bản sắc nét.<br><small>Form đã sẵn sàng để đăng bài tiếp theo.</small>`;
           form.reset();
+          selectedFiles = [];
+          previewGrid.innerHTML = '';
           previewContainer.style.display = 'none';
         } else {
           statusBox.className = "status-box status-error";
@@ -1428,7 +1528,7 @@
       xhr.onerror = function() {
         submitBtn.disabled = false;
         statusBox.className = "status-box status-error";
-        statusBox.innerHTML = `❌ <b>Lỗi kết nối mạng:</b> Không thể gửi file (${finalSizeMB} MB) tới máy chủ.`;
+        statusBox.innerHTML = `❌ <b>Lỗi kết nối mạng:</b> Không thể gửi ${processedFiles.length} file (${finalSizeMB} MB) tới máy chủ.`;
       };
 
       xhr.ontimeout = function() {
