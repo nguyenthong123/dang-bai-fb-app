@@ -1487,11 +1487,13 @@
       statusBox.innerHTML = `<span class="spinner"></span> Đang tải lên server ${fileCountText}: <b id="uploadPercent">0%</b>...`;
 
       const formData = new FormData();
-      processedFiles.forEach((file, idx) => {
-        formData.append('image', file);
-        formData.append('images', file);
-        formData.append(`image_${idx}`, file);
-      });
+      if (processedFiles.length === 1) {
+        formData.append('image', processedFiles[0]);
+      } else {
+        processedFiles.forEach((file, idx) => {
+          formData.append(`image_${idx}`, file);
+        });
+      }
       formData.append('fileCount', processedFiles.length);
       formData.append('caption', caption);
       formData.append('brand', currentBrand);
