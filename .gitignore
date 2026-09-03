@@ -1,0 +1,10 @@
+# ==========================================================
+# CÁC FILE BẢO MẬT & TÀI LIỆU NỘI BỘ (KHÔNG ĐẨY LÊN GITHUB)
+# ==========================================================
+# Tất cả các file tài liệu chứa mật khẩu, IP, token bảo mật
+*.md
+README.md
+SYSTEM_CONNECTION_GUIDE.md
+*.env
+.env*
+scratch/
